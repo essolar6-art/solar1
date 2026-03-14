@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOLAR-H | Instalación de Sistemas Solares Fotovoltaicos</title>
+    <meta name="description" content="SOLAR-H - Expertos en instalación de sistemas solares fotovoltaicos. Cotización personalizada, equipos certificados y garantía de calidad.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- GSAP for Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        solar: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                            accent: '#f59e0b',
+                            dark: '#0f172a',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'shimmer': 'shimmer 2s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '-1000px 0' },
+                            '100%': { backgroundPosition: '1000px 0' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #f59e0b 0%, #0ea5e9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(14, 165, 233, 0.2);
+        }
+        
+        .sun-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.3) 0%, rgba(245, 158, 11, 0) 70%);
+            border-radius: 50%;
+            filter: blur(60px);
+            animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        .editable-zone {
+            position: relative;
+            border: 2px dashed transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .editable-zone:hover {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.05);
+        }
+        
+        .editable-zone::after {
+            content: '✏️ Editar';
+            position: absolute;
+            top: -30px;
+            right: 0;
+            background: #f59e0b;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        
+        .editable-zone:hover::after {
+            opacity: 1;
+        }
+        
+        .floating-shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 20s infinite ease-in-out;
+        }
+        
+        @media (max-width: 768px) {
+            .sun-glow {
+                width: 300px;
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-effect bg-white/80 border-b border-slate-200/50 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-lg flex items-center justify-center shadow-lg">
+                        <i data-lucide="sun" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <span class="font-display font-bold text-2xl text-slate-900 tracking-tight">SOLAR<span class="text-amber-500">-H</span></span>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#inicio" class="text-slate-600 hover:text-amber-500 font-medium transition-colors">Inicio</a>
+                    <a href="#servicios" class="text-slate-600 hover:text-amber-500 font-medium transition-colors">Servicios</a>
+                    <a href="#beneficios" class="text-slate-600 hover:text-amber-500 font-medium transition-colors">Beneficios</a>
+                    <a href="#proyectos" class="text-slate-600 hover:text-amber-500 font-medium transition-colors">Proyectos</a>
+                    <a href="#contacto" class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg hover:scale-105 transition-all">
+                        Cotizar Ahora
+                    </a>
+                </div>
+
+                <button class="md:hidden p-2" id="mobile-menu-btn">
+                    <i data-lucide="menu" class="w-6 h-6 text-slate-700"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="hidden md:hidden bg-white border-t border-slate-100" id="mobile-menu">
+            <div class="px-4 pt-2 pb-6 space-y-2">
+                <a href="#inicio" class="block px-3 py-2 text-slate-600 hover:text-amber-500 font-medium">Inicio</a>
+                <a href="#servicios" class="block px-3 py-2 text-slate-600 hover:text-amber-500 font-medium">Servicios</a>
+                <a href="#beneficios" class="block px-3 py-2 text-slate-600 hover:text-amber-500 font-medium">Beneficios</a>
+                <a href="#proyectos" class="block px-3 py-2 text-slate-600 hover:text-amber-500 font-medium">Proyectos</a>
+                <a href="#contacto" class="block px-3 py-2 text-amber-600 font-semibold">Cotizar Ahora</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="relative min-h-screen flex items-center hero-gradient overflow-hidden pt-20">
+        <div class="sun-glow top-20 right-20"></div>
+        <div class="sun-glow bottom-20 left-20 bg-blue-500/20"></div>
+        
+        <!-- Floating Elements -->
+        <div class="floating-shape top-1/4 left-10">
+            <i data-lucide="sun" class="w-24 h-24 text-amber-400"></i>
+        </div>
+        <div class="floating-shape bottom-1/4 right-10" style="animation-delay: -5s;">
+            <i data-lucide="zap" class="w-16 h-16 text-blue-400"></i>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-8 animate-fade-in">
+                    <div class="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
+                        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                        <span class="text-white/90 text-sm font-medium">Instaladores Certificados RETIE</span>
+                    </div>
+                    
+                    <h1 class="font-display text-5xl md:text-7xl font-bold text-white leading-tight">
+                        Energía Solar <br>
+                        <span class="gradient-text">Para Tu Hogar</span>
+                    </h1>
+                    
+                    <p class="text-xl text-slate-300 max-w-lg leading-relaxed">
+                        Reduce hasta un 95% en tu factura de energía con sistemas fotovoltaicos de alta eficiencia. Instalación profesional con garantía de 25 años.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="#contacto" class="group bg-gradient-to-r from-amber-500 to-orange-500 text-white px-8 py-4 rounded-full font-semibold text-lg hover:shadow-2xl hover:shadow-amber-500/30 transition-all flex items-center justify-center space-x-2">
+                            <span>Solicitar Cotización</span>
+                            <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                        <a href="#servicios" class="bg-white/10 backdrop-blur-sm text-white border border-white/30 px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/20 transition-all flex items-center justify-center">
+                            Ver Servicios
+                        </a>
+                    </div>
+
+                    <div class="flex items-center space-x-8 pt-4">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-amber-400 font-display">500+</div>
+                            <div class="text-sm text-slate-400">Instalaciones</div>
+                        </div>
+                        <div class="w-px h-12 bg-white/20"></div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-amber-400 font-display">25</div>
+                            <div class="text-sm text-slate-400">Años Garantía</div>
+                        </div>
+                        <div class="w-px h-12 bg-white/20"></div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-amber-400 font-display">95%</div>
+                            <div class="text-sm text-slate-400">Ahorro Energía</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative lg:h-[600px] flex items-center justify-center">
+                    <div class="relative w-full max-w-md animate-float">
+                        <div class="absolute inset-0 bg-gradient-to-r from-amber-500 to-orange-500 rounded-3xl blur-2xl opacity-30"></div>
+                        <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&auto=format&fit=crop&q=80" 
+                             alt="Paneles Solares Instalación" 
+                             class="relative rounded-3xl shadow-2xl w-full object-cover h-[500px] editable-zone"
+                             data-editable="hero-image">
+                        
+                        <!-- Floating Card -->
+                        <div class="absolute -bottom-6 -left-6 bg-white rounded-2xl p-4 shadow-xl animate-pulse-slow">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i data-lucide="trending-down" class="w-6 h-6 text-green-600"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-slate-500">Ahorro Mensual</div>
+                                    <div class="text-xl font-bold text-slate-900">-85% Factura</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-50 to-transparent"></div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="servicios" class="py-24 bg-slate-50 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-amber-600 font-semibold tracking-wider uppercase text-sm">Nuestros Servicios</span>
+                <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mt-4 mb-6">
+                    Soluciones Solares <span class="text-amber-500">Completas</span>
+                </h2>
+                <p class="text-lg text-slate-600">
+                    Ofrecemos servicios integrales de energía solar fotovoltaica para hogares, empresas e industrias.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Service Card 1 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover group editable-zone" data-editable="service-1">
+                    <div class="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="home" class="w-8 h-8 text-amber-600"></i>
+                    </div>
+                    <h3 class="font-display text-xl font-bold text-slate-900 mb-3">Residencial</h3>
+                    <p class="text-slate-600 mb-4">Sistemas solares para hogares que reducen drásticamente el consumo de energía de la red eléctrica.</p>
+                    <ul class="space-y-2 text-sm text-slate-500">
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i> Diseño personalizado</li>
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i> Instalación en 48h</li>
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i> Monitoreo APP</li>
+                    </ul>
+                </div>
+
+                <!-- Service Card 2 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover group editable-zone" data-editable="service-2">
+                    <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="building-2" class="w-8 h-8 text-blue-600"></i>
+                    </div>
+                    <h3 class="font-display text-xl font-bold text-slate-900 mb-3">Comercial</h3>
+                    <p class="text-slate-600 mb-4">Soluciones para negocios y oficinas que buscan reducir costos operativos y mejorar su imagen sostenible.</p>
+                    <ul class="space-y-2 text-sm text-slate-500">
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i> Análisis ROI</li>
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i> Financiamiento</li>
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i> Beneficios tributarios</li>
+                    </ul>
+                </div>
+
+                <!-- Service Card 3 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover group editable-zone" data-editable="service-3">
+                    <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="factory" class="w-8 h-8 text-green-600"></i>
+                    </div>
+                    <h3 class="font-display text-xl font-bold text-slate-900 mb-3">Industrial</h3>
+                    <p class="text-slate-600 mb-4">Plantas solares de gran escala para industrias con consumos energéticos masivos.</p>
+                    <ul class="space-y-2 text-sm text-slate-500">
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i> Ingeniería avanzada</li>
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i> Certificación RETIE</li>
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i> Mantenimiento 24/7</li>
+                    </ul>
+                </div>
+
+                <!-- Service Card 4 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover group editable-zone" data-editable="service-4">
+                    <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="battery-charging" class="w-8 h-8 text-purple-600"></i>
+                    </div>
+                    <h3 class="font-display text-xl font-bold text-slate-900 mb-3">Sistemas Híbridos</h3>
+                    <p class="text-slate-600 mb-4">Combinación de solar con baterías de litio para independencia energética total.</p>
+                    <ul class="space-y-2 text-sm text-slate-500">
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i> Backup energético</li>
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i> Baterías Tesla/Pylontech</li>
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i> Gestión inteligente</li>
+                    </ul>
+                </div>
+
+                <!-- Service Card 5 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover group editable-zone" data-editable="service-5">
+                    <div class="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="wrench" class="w-8 h-8 text-red-600"></i>
+                    </div>
+                    <h3 class="font-display text-xl font-bold text-slate-900 mb-3">Mantenimiento</h3>
+                    <p class="text-slate-600 mb-4">Servicio técnico especializado y limpieza de paneles para máximo rendimiento.</p>
+                    <ul class="space-y-2 text-sm text-slate-500">
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i> Limpieza profesional</li>
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i> Monitoreo remoto</li>
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i> Reparaciones</li>
+                    </ul>
+                </div>
+
+                <!-- Service Card 6 -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg card-hover group editable-zone" data-editable="service-6">
+                    <div class="w-16 h-16 bg-cyan-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="file-text" class="w-8 h-8 text-cyan-600"></i>
+                    </div>
+                    <h3 class="font-display text-xl font-bold text-slate-900 mb-3">Trámites</h3>
+                    <p class="text-slate-600 mb-4">Gestión completa de interconexión ante la utility y beneficios de Ley 1715.</p>
+                    <ul class="space-y-2 text-sm text-slate-500">
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i> Interconexión</li>
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i> Incentivos tributarios</li>
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i> Financiación verde</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section id="beneficios" class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="order-2 lg:order-1 relative">
+                    <div class="grid grid-cols-2 gap-4 editable-zone" data-editable="benefits-gallery">
+                        <img src="https://images.unsplash.com/photo-1611365892117-00ac5ef43c90?w=400&auto=format&fit=crop&q=80" 
+                             alt="Instalación Solar" 
+                             class="rounded-2xl shadow-lg w-full h-64 object-cover transform translate-y-8">
+                        <img src="https://images.unsplash.com/photo-1558449028-b53a39d100fc?w=400&auto=format&fit=crop&q=80" 
+                             alt="Técnico Trabajando" 
+                             class="rounded-2xl shadow-lg w-full h-64 object-cover">
+                        <img src="https://images.unsplash.com/photo-1497440001374-f26997328c1b?w=400&auto=format&fit=crop&q=80" 
+                             alt="Panel Solar Detalle" 
+                             class="rounded-2xl shadow-lg w-full h-64 object-cover">
+                        <img src="https://images.unsplash.com/photo-1592833159155-c62df1b65634?w=400&auto=format&fit=crop&q=80" 
+                             alt="Casa con Paneles" 
+                             class="rounded-2xl shadow-lg w-full h-64 object-cover transform -translate-y-8">
+                    </div>
+                    <!-- Decorative Elements -->
+                    <div class="absolute -z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-r from-amber-200 to-blue-200 rounded-full blur-3xl opacity-30"></div>
+                </div>
+
+                <div class="order-1 lg:order-2">
+                    <span class="text-amber-600 font-semibold tracking-wider uppercase text-sm">¿Por Qué Elegirnos?</span>
+                    <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mt-4 mb-6">
+                        La Mejor Inversión para tu <span class="text-amber-500">Futuro</span>
+                    </h2>
+                    <p class="text-lg text-slate-600 mb-8">
+                        Con más de 500 instalaciones exitosas, SOLAR-H se posiciona como líder en energía solar fotovoltaica en Colombia.
+                    </p>
+
+                    <div class="space-y-6">
+                        <div class="flex items-start space-x-4 group">
+                            <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-amber-500 transition-colors">
+                                <i data-lucide="badge-check" class="w-6 h-6 text-amber-600 group-hover:text-white transition-colors"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-lg">Equipos Certificados</h4>
+                                <p class="text-slate-600">Paneles de primera marca con certificación internacional IEC y garantía de fabricante.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4 group">
+                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-blue-500 transition-colors">
+                                <i data-lucide="shield-check" class="w-6 h-6 text-blue-600 group-hover:text-white transition-colors"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-lg">Garantía Extendida</h4>
+                                <p class="text-slate-600">25 años de garantía en paneles y 10 años en inversores. Tranquilidad total.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4 group">
+                            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-green-500 transition-colors">
+                                <i data-lucide="clock" class="w-6 h-6 text-green-600 group-hover:text-white transition-colors"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-lg">Instalación Express</h4>
+                                <p class="text-slate-600">Instalación profesional en menos de 48 horas sin interrumpir tu energía.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4 group">
+                            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-purple-500 transition-colors">
+                                <i data-lucide="headphones" class="w-6 h-6 text-purple-600 group-hover:text-white transition-colors"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-lg">Soporte 24/7</h4>
+                                <p class="text-slate-600">Monitoreo en tiempo real y atención técnica permanente vía WhatsApp.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="py-24 bg-slate-900 text-white relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-amber-400 font-semibold tracking-wider uppercase text-sm">Proceso Simple</span>
+                <h2 class="font-display text-4xl md:text-5xl font-bold mt-4 mb-6">
+                    4 Pasos para tu <span class="text-amber-500">Energía Solar</span>
+                </h2>
+            </div>
+
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="relative group">
+                    <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 hover:border-amber-500/50 transition-all">
+                        <div class="w-16 h-16 bg-amber-500 rounded-full flex items-center justify-center text-2xl font-bold mb-6 group-hover:scale-110 transition-transform">1</div>
+                        <h3 class="font-display text-xl font-bold mb-3">Cotización</h3>
+                        <p class="text-slate-300 text-sm">Analizamos tu factura de energía y diseñamos el sistema ideal para tus necesidades.</p>
+                    </div>
+                    <div class="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-amber-500">
+                        <i data-lucide="arrow-right" class="w-8 h-8"></i>
+                    </div>
+                </div>
+
+                <div class="relative group">
+                    <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 hover:border-amber-500/50 transition-all">
+                        <div class="w-16 h-16 bg-amber-500 rounded-full flex items-center justify-center text-2xl font-bold mb-6 group-hover:scale-110 transition-transform">2</div>
+                        <h3 class="font-display text-xl font-bold mb-3">Diseño</h3>
+                        <p class="text-slate-300 text-sm">Ingeniería detallada con simulación de producción y sombras en tu techo.</p>
+                    </div>
+                    <div class="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-amber-500">
+                        <i data-lucide="arrow-right" class="w-8 h-8"></i>
+                    </div>
+                </div>
+
+                <div class="relative group">
+                    <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 hover:border-amber-500/50 transition-all">
+                        <div class="w-16 h-16 bg-amber-500 rounded-full flex items-center justify-center text-2xl font-bold mb-6 group-hover:scale-110 transition-transform">3</div>
+                        <h3 class="font-display text-xl font-bold mb-3">Instalación</h3>
+                        <p class="text-slate-300 text-sm">Instalación profesional certificada RETIE en menos de 48 horas.</p>
+                    </div>
+                    <div class="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-amber-500">
+                        <i data-lucide="arrow-right" class="w-8 h-8"></i>
+                    </div>
+                </div>
+
+                <div class="relative group">
+                    <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 hover:border-amber-500/50 transition-all">
+                        <div class="w-16 h-16 bg-amber-500 rounded-full flex items-center justify-center text-2xl font-bold mb-6 group-hover:scale-110 transition-transform">4</div>
+                        <h3 class="font-display text-xl font-bold mb-3">Conexión</h3>
+                        <p class="text-slate-300 text-sm">Trámites de interconexión y puesta en marcha con monitoreo incluido.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Gallery -->
+    <section id="proyectos" class="py-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-amber-600 font-semibold tracking-wider uppercase text-sm">Proyectos Realizados</span>
+                <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mt-4 mb-6">
+                    Instalaciones <span class="text-amber-500">Exitosas</span>
+                </h2>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6 editable-zone" data-editable="projects-gallery">
+                <div class="group relative overflow-hidden rounded-2xl cursor-pointer">
+                    <img src="https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=600&auto=format&fit=crop&q=80" 
+                         alt="Proyecto Residencial" 
+                         class="w-full h-80 object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                        <h3 class="text-white font-bold text-xl">Casa Campestre</h3>
+                        <p class="text-slate-300 text-sm">10kW - Bogotá</p>
+                    </div>
+                </div>
+
+                <div class="group relative overflow-hidden rounded-2xl cursor-pointer">
+                    <img src="https://images.unsplash.com/photo-1548613053-220e7558185a?w=600&auto=format&fit=crop&q=80" 
+                         alt="Proyecto Comercial" 
+                         class="w-full h-80 object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                        <h3 class="text-white font-bold text-xl">Centro Comercial</h3>
+                        <p class="text-slate-300 text-sm">50kW - Medellín</p>
+                    </div>
+                </div>
+
+                <div class="group relative overflow-hidden rounded-2xl cursor-pointer">
+                    <img src="https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=600&auto=format&fit=crop&q=80" 
+                         alt="Proyecto Industrial" 
+                         class="w-full h-80 object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                        <h3 class="text-white font-bold text-xl">Planta Industrial</h3>
+                        <p class="text-slate-300 text-sm">200kW - Cali</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quote/Contact Section -->
+    <section id="contacto" class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <span class="text-amber-600 font-semibold tracking-wider uppercase text-sm">Cotización Gratis</span>
+                    <h2 class="font-display text-4xl md:text-5xl font-bold text-slate-900 mt-4 mb-6">
+                        Solicita tu <span class="text-amber-500">Estudio Personalizado</span>
+                    </h2>
+                    <p class="text-lg text-slate-600 mb-8">
+                        Déjanos tus datos y un especialista te contactará en menos de 24 horas con una propuesta detallada adaptada a tu consumo energético.
+                    </p>
+
+                    <div class="space-y-6 mb-8">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                                <i data-lucide="phone" class="w-6 h-6 text-amber-600"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm text-slate-500">Llámanos</div>
+                                <div class="text-xl font-bold text-slate-900 editable-zone" data-editable="phone-number">318 077 6071</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i data-lucide="mail" class="w-6 h-6 text-blue-600"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm text-slate-500">Email</div>
+                                <div class="text-xl font-bold text-slate-900 editable-zone" data-editable="email">solarh40@gmail.com</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                <i data-lucide="map-pin" class="w-6 h-6 text-green-600"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm text-slate-500">Cobertura</div>
+                                <div class="text-xl font-bold text-slate-900 editable-zone" data-editable="location">Bogotá y Alrededores</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <a href="https://wa.me/573180776071" target="_blank" class="flex-1 bg-green-500 text-white px-6 py-4 rounded-xl font-semibold hover:bg-green-600 transition-colors flex items-center justify-center space-x-2">
+                            <i data-lucide="message-circle" class="w-5 h-5"></i>
+                            <span>WhatsApp</span>
+                        </a>
+                        <a href="tel:3180776071" class="flex-1 bg-slate-900 text-white px-6 py-4 rounded-xl font-semibold hover:bg-slate-800 transition-colors flex items-center justify-center space-x-2">
+                            <i data-lucide="phone-call" class="w-5 h-5"></i>
+                            <span>Llamar Ahora</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 rounded-3xl p-8 shadow-xl editable-zone" data-editable="contact-form">
+                    <form class="space-y-6" onsubmit="event.preventDefault(); alert('¡Gracias por tu interés! Te contactaremos pronto.');">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">Nombre Completo</label>
+                                <input type="text" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition-all" placeholder="Tu nombre">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">Teléfono</label>
+                                <input type="tel" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition-all" placeholder="318 000 0000">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Correo Electrónico</label>
+                            <input type="email" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition-all" placeholder="tu@email.com">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Tipo de Proyecto</label>
+                            <select class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition-all">
+                                <option>Residencial (Casa/Apartamento)</option>
+                                <option>Comercial (Negocio/Oficina)</option>
+                                <option>Industrial (Fábrica/Bodega)</option>
+                                <option>Institucional (Colegio/Hospital)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Valor Promedio Factura</label>
+                            <select class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition-all">
+                                <option>Menos de $200.000</option>
+                                <option>$200.000 - $500.000</option>
+                                <option>$500.000 - $1.000.000</option>
+                                <option>$1.000.000 - $2.000.000</option>
+                                <option>Más de $2.000.000</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Mensaje (Opcional)</label>
+                            <textarea rows="4" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition-all" placeholder="Cuéntanos más sobre tu proyecto..."></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white py-4 rounded-xl font-bold text-lg hover:shadow-xl hover:shadow-amber-500/30 transition-all flex items-center justify-center space-x-2 group">
+                            <span>Solicitar Cotización</span>
+                            <i data-lucide="send" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+
+                        <p class="text-xs text-slate-500 text-center">
+                            Al enviar este formulario aceptas nuestra política de privacidad. Te contactaremos en máximo 24 horas hábiles.
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-2">
+                    <div class="flex items-center space-x-2 mb-6">
+                        <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-lg flex items-center justify-center">
+                            <i data-lucide="sun" class="w-6 h-6 text-white"></i>
+                        </div>
+                        <span class="font-display font-bold text-2xl tracking-tight">SOLAR<span class="text-amber-500">-H</span></span>
+                    </div>
+                    <p class="text-slate-400 mb-6 max-w-sm">
+                        Especialistas en instalación de sistemas solares fotovoltaicos. Transformamos la energía del sol en ahorro real para tu bolsillo.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-amber-500 transition-colors">
+                            <i data-lucide="facebook" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-amber-500 transition-colors">
+                            <i data-lucide="instagram" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-amber-500 transition-colors">
+                            <i data-lucide="linkedin" class="w-5 h-5"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-lg mb-6">Enlaces Rápidos</h4>
+                    <ul class="space-y-3 text-slate-400">
+                        <li><a href="#inicio" class="hover:text-amber-500 transition-colors">Inicio</a></li>
+                        <li><a href="#servicios" class="hover:text-amber-500 transition-colors">Servicios</a></li>
+                        <li><a href="#beneficios" class="hover:text-amber-500 transition-colors">Beneficios</a></li>
+                        <li><a href="#proyectos" class="hover:text-amber-500 transition-colors">Proyectos</a></li>
+                        <li><a href="#contacto" class="hover:text-amber-500 transition-colors">Cotizar</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-lg mb-6">Contacto</h4>
+                    <ul class="space-y-3 text-slate-400">
+                        <li class="flex items-center space-x-3">
+                            <i data-lucide="phone" class="w-5 h-5 text-amber-500"></i>
+                            <span>318 077 6071</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i data-lucide="mail" class="w-5 h-5 text-amber-500"></i>
+                            <span>solarh40@gmail.com</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i data-lucide="clock" class="w-5 h-5 text-amber-500"></i>
+                            <span>Lun - Vie: 8am - 6pm</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-slate-500 text-sm">
+                    © 2024 SOLAR-H. Todos los derechos reservados.
+                </p>
+                <p class="text-slate-500 text-sm mt-4 md:mt-0">
+                    Diseñado con <i data-lucide="heart" class="w-4 h-4 inline text-red-500"></i> para un futuro sostenible
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Admin Panel (Hidden by default, shown with secret key combination) -->
+    <div id="admin-panel" class="fixed bottom-4 right-4 bg-white rounded-2xl shadow-2xl p-6 w-80 transform translate-y-full opacity-0 transition-all duration-300 z-50 border border-slate-200">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-slate-900 flex items-center">
+                <i data-lucide="settings" class="w-5 h-5 mr-2 text-amber-500"></i>
+                Panel de Edición
+            </h3>
+            <button onclick="toggleAdmin()" class="text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <p class="text-sm text-slate-600 mb-4">
+            Haz clic en cualquier elemento resaltado para editar su contenido. Los cambios se guardan automáticamente en el navegador.
+        </p>
+        <div class="space-y-2">
+            <button onclick="enableEditMode()" class="w-full bg-amber-500 text-white py-2 rounded-lg font-medium hover:bg-amber-600 transition-colors">
+                Activar Edición
+            </button>
+            <button onclick="disableEditMode()" class="w-full bg-slate-200 text-slate-700 py-2 rounded-lg font-medium hover:bg-slate-300 transition-colors">
+                Desactivar Edición
+            </button>
+            <button onclick="resetChanges()" class="w-full border border-red-300 text-red-600 py-2 rounded-lg font-medium hover:bg-red-50 transition-colors">
+                Restaurar Original
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating Edit Button -->
+    <button onclick="toggleAdmin()" id="admin-toggle" class="fixed bottom-4 right-4 bg-slate-900 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:bg-amber-500 transition-colors z-40">
+        <i data-lucide="edit-3" class="w-6 h-6"></i>
+    </button>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-lg', 'bg-white/95');
+                navbar.classList.remove('bg-white/80');
+            } else {
+                navbar.classList.remove('shadow-lg', 'bg-white/95');
+                navbar.classList.add('bg-white/80');
+            }
+        });
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Animate elements on scroll
+        gsap.utils.toArray('.card-hover').forEach((card, i) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 85%',
+                },
+                y: 50,
+                opacity: 0,
+                duration: 0.6,
+                delay: i * 0.1,
+                ease: 'power2.out'
+            });
+        });
+
+        // Hero animation
+        gsap.from('.animate-fade-in > *', {
+            y: 30,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.2,
+            ease: 'power2.out'
+        });
+
+        // Admin Panel Functions
+        let editMode = false;
+
+        function toggleAdmin() {
+            const panel = document.getElementById('admin-panel');
+            const toggle = document.getElementById('admin-toggle');
+            
+            if (panel.classList.contains('translate-y-full')) {
+                panel.classList.remove('translate-y-full', 'opacity-0');
+                toggle.classList.add('hidden');
+            } else {
+                panel.classList.add('translate-y-full', 'opacity-0');
+                toggle.classList.remove('hidden');
+            }
+        }
+
+        function enableEditMode() {
+            editMode = true;
+            document.querySelectorAll('.editable-zone').forEach(zone => {
+                zone.contentEditable = true;
+                zone.classList.add('ring-2', 'ring-amber-500', 'ring-offset-2');
+                
+                // Save original content if not saved
+                if (!zone.dataset.original) {
+                    zone.dataset.original = zone.innerHTML;
+                }
+            });
+            
+            // Save to localStorage on input
+            document.querySelectorAll('.editable-zone').forEach(zone => {
+                zone.addEventListener('input', () => {
+                    localStorage.setItem(zone.dataset.editable, zone.innerHTML);
+                });
+            });
+            
+            alert('Modo edición activado. Haz clic en cualquier elemento resaltado para modificarlo.');
+        }
+
+        function disableEditMode() {
+            editMode = false;
+            document.querySelectorAll('.editable-zone').forEach(zone => {
+                zone.contentEditable = false;
+                zone.classList.remove('ring-2', 'ring-amber-500', 'ring-offset-2');
+            });
+        }
+
+        function resetChanges() {
+            if (confirm('¿Estás seguro de restaurar el contenido original? Se perderán todos los cambios.')) {
+                document.querySelectorAll('.editable-zone').forEach(zone => {
+                    if (zone.dataset.original) {
+                        zone.innerHTML = zone.dataset.original;
+                        localStorage.removeItem(zone.dataset.editable);
+                    }
+                });
+                disableEditMode();
+            }
+        }
+
+        // Load saved content on page load
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.editable-zone').forEach(zone => {
+                const saved = localStorage.getItem(zone.dataset.editable);
+                if (saved) {
+                    zone.innerHTML = saved;
+                }
+                // Store original
+                zone.dataset.original = zone.innerHTML;
+            });
+            lucide.createIcons();
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    // Close mobile menu if open
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        });
+
+        // Keyboard shortcut for admin panel (Ctrl/Cmd + E)
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+                e.preventDefault();
+                toggleAdmin();
+            }
+        });
+    </script>
+</body>
+</html>
